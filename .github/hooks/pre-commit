@@ -1,3 +1,22 @@
+#!/bin/bash
+
+# Define regex to match the commit message format
+regex="^\[[^]]+\] - \[[^]]+\] - \[[^]]+\] - \[[^]]+\] - .+$"
+
+# Fetch commit message
+commit_message_file=$(git rev-parse --git-dir)/COMMIT_EDITMSG
+commit_message=$(cat "$commit_message_file")
+
+# Fetch current branch name
+branch_name=$(git rev-parse --abbrev-ref HEAD)
+
+# Check if commit message matches the required format
+if ! [[ $commit_message =~ $regex ]]; then
+	echo "ERROR: Commit message does not follow the required format:"
+	echo "[Module/Functional Category] - [Business Unit] - [Use Case ID] - [JIRA Issue No] - [Change Summary]"
+	exit 1
+fi
+
 # Check if branch name contains JIRA issue number (e.g., ADP-0000)
 if ! [[ $branch_name =~ [a-zA-Z]+-[0-9]+ ]]; then
 	echo "ERROR: Branch name does not contain a JIRA issue number (e.g., ADP-0000)"
